@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#FF9700" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Bug #16 Fix — SEO Meta Tags -->
+    <meta name="description" content="Meraj Calculator Pro — Scientific Calculator with EMI, GST, BMI, Age, Land Measurement & 15+ Tools. Hindi, Urdu, English support.">
+    <meta name="keywords" content="calculator, scientific calculator, EMI calculator, GST calculator, BMI, amin tool, land measurement, meraj calculator">
+    <meta name="author" content="Meraj Alam, M.A Studio">
+    <meta property="og:title" content="Meraj Calculator Pro">
+    <meta property="og:description" content="Scientific Calculator with EMI, GST, BMI, Age, Land & 15+ Tools">
+    <meta property="og:type" content="website">
+
+    <title>Meraj Calculator Pro</title>
+
+    <!-- Bug #15 Fix — Favicon -->
+    <link rel="icon" type="image/png" href="20260201_184219.png">
+    <link rel="apple-touch-icon" href="20260201_184219.png">
+
+    <!-- Bug #11 Fix — RTL language apply BEFORE page renders (no flash) -->
+    <script>
+        (function() {
+            try {
+                var lang = localStorage.getItem('app_lang') || 'English (India)';
+                if (lang === 'Urdu') {
+                    document.documentElement.setAttribute('dir', 'rtl');
+                    document.documentElement.setAttribute('lang', 'ur');
+                } else if (lang === 'Hindi') {
+                    document.documentElement.setAttribute('lang', 'hi');
+                }
+            } catch(e) {}
+        })();
+    </script>
+
+    <!-- App config MUST load first — sab JS files isko use karti hain -->
+    <script src="js/app.config.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tools.css">
+    <link rel="stylesheet" href="css/meraj.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Banner Ad CSS -->
+    <style>
+        /* ── Banner Ad Strip ── */
+        .ad-banner-strip {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-sec, #f5f5f5);
+            border-top: 1px solid var(--border-color, #e0e0e0);
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            min-height: 52px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        /* Dark mode mein ad background */
+        body.dark-mode .ad-banner-strip {
+            background: #1e1e1e;
+            border-color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="calc-container">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <button class="icon-btn" onclick="openMenu()" aria-label="Menu">
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <button class="icon-btn active-orange" id="btn-calc" onclick="closeMoreFeatures()" aria-label="Calculator">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3h2v2h2v2h-2v2h-2v-2H10V8h2V6zm-4 10H6v-2h2v2zm0-4H6v-2h2v2zm4 4h-2v-2h2v2zm4 0h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-grid" onclick="openMoreFeatures()" aria-label="Tools">
+            <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-home" onclick="showDailyTools()" aria-label="Home">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-settings" onclick="toggleSettingsPopup()" aria-label="Settings">
+            <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        </button>
+    </div>
+
+    <!-- SETTINGS POPUP -->
+    <div id="settingsPopup" class="settings-popup">
+        <div class="popup-item" onclick="openHistory(); toggleSettingsPopup();">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </div>
+        <div class="popup-item" onclick="alert(APP.getAbout()); toggleSettingsPopup();">
+            <i class="fas fa-info-circle"></i>
+            <span data-i18n="about">About</span>
+        </div>
+    </div>
+
+    <!-- DISPLAY AREA -->
+    <div class="display-area">
+        <div class="mode-toggle-container">
+            <button class="flask-btn" onclick="toggleSimpleMode()" title="Toggle Scientific Mode">
+                <i class="fas fa-flask"></i>
+            </button>
+            <div class="angle-switcher" onclick="toggleAngleUnit()">
+                <span id="unit-rad" class="unit-box active-unit">Rad</span>
+                <span id="unit-deg" class="unit-box">Deg</span>
+            </div>
+        </div>
+        <div id="history-line" class="history-text"></div>
+        <input type="text" id="display" placeholder="0" inputmode="none" autocomplete="off" spellcheck="false">
+        <div id="liveResult"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         BANNER AD STRIP — Display aur Keypad ke beech
+         Google AdSense ya koi bhi ad network yahan kaam karega.
+
+         HOW TO ACTIVATE:
+         1. Google AdSense account banao: https://adsense.google.com
+         2. Apna ca-pub-XXXXXXXX ID neeche replace karo
+         3. Ad slot number bhi replace karo
+         4. App ko HTTPS domain par host karo (localhost pe ads nahi chalenge)
+         ══════════════════════════════════════════════ -->
+    <div class="ad-banner-strip" id="adBannerStrip">
+        <!-- AdSense Banner — Activate karne ke liye neeche ka comment hataao aur apna ID daalo -->
+        <!--
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:320px;height:50px"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX">
+        </ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+
+        <!-- TEST AD — Real AdSense se replace karo (yeh sirf placeholder hai) -->
+        <div id="adPlaceholder" style="
+            width:320px; height:50px;
+            background: linear-gradient(135deg, var(--primary, #FF9700), #e65c00);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        " onclick="window.open(APP.getStoreLink()||'#','_blank')">
+            <i class="fas fa-calculator" style="color:#fff; font-size:1.1rem;"></i>
+            <span style="color:#fff; font-size:0.82rem; font-weight:800; letter-spacing:0.3px;">
+                Meraj Calculator Pro — Download Karein 🚀
+            </span>
+        </div>
+    </div>
+
+    <!-- KEYPAD -->
+    <div class="keypad-wrapper simple">
+        <!-- Scientific Grid -->
+        <div class="sci-grid">
+            <button class="btn sci" onclick="insertVal('(')">(</button>
+            <button class="btn sci" onclick="insertVal(')')">)</button>
+            <button class="btn sci" onclick="memoryClear()">mc</button>
+            <button class="btn sci" onclick="memoryAdd()">m+</button>
+            <button class="btn sci" onclick="memorySubtract()">m-</button>
+            <button class="btn sci" onclick="memoryRecall()">mr</button>
+
+            <button class="btn sci" onclick="insertVal('²')">x²</button>
+            <button class="btn sci" onclick="insertVal('³')">x³</button>
+            <button class="btn sci" onclick="insertVal('^')">xʸ</button>
+            <button class="btn sci" onclick="insertFunc('exp')">eˣ</button>
+            <button class="btn sci" onclick="insertFunc('10')">10ˣ</button>
+            <button class="btn sci" onclick="insertVal('1/')">¹/x</button>
+
+            <button class="btn sci" onclick="insertFunc('√')">²√x</button>
+            <button class="btn sci" onclick="insertFunc('³√')">³√x</button>
+            <button class="btn sci" onclick="insertVal('^(1/')">ʸ√x</button>
+            <button class="btn sci" onclick="insertFunc('ln')">ln</button>
+            <button class="btn sci" onclick="insertFunc('log')">log</button>
+            <button class="btn sci" onclick="insertVal('!')">x!</button>
+
+            <button class="btn sci" onclick="insertFunc('sin')">sin</button>
+            <button class="btn sci" onclick="insertFunc('cos')">cos</button>
+            <button class="btn sci" onclick="insertFunc('tan')">tan</button>
+            <button class="btn sci" onclick="insertVal('Math.E')">e</button>
+            <button class="btn sci" onclick="insertVal('E')">EE</button>
+            <button class="btn sci" onclick="insertFunc('rand')">Rand</button>
+
+            <button class="btn sci" onclick="insertFunc('sinh')">sinh</button>
+            <button class="btn sci" onclick="insertFunc('cosh')">cosh</button>
+            <button class="btn sci" onclick="insertFunc('tanh')">tanh</button>
+            <button class="btn sci" onclick="insertVal('Math.PI')">π</button>
+            <button class="btn sci" onclick="toggleAngleUnit()" id="sci-angle-btn">Rad</button>
+            <button class="btn sci" onclick="insertVal('%')">%</button>
+        </div>
+
+        <!-- Main Keypad -->
+        <div class="main-grid">
+            <button class="btn func delete-btn" onclick="backspace()"><i class="fas fa-backspace"></i></button>
+            <button class="btn func" onclick="clearAll()">C</button>
+            <button class="btn func" onclick="insertVal('%')">%</button>
+            <button class="btn op" onclick="insertVal('/')">÷</button>
+
+            <button class="btn num" onclick="insertVal('7')">7</button>
+            <button class="btn num" onclick="insertVal('8')">8</button>
+            <button class="btn num" onclick="insertVal('9')">9</button>
+            <button class="btn op" onclick="insertVal('*')">×</button>
+
+            <button class="btn num" onclick="insertVal('4')">4</button>
+            <button class="btn num" onclick="insertVal('5')">5</button>
+            <button class="btn num" onclick="insertVal('6')">6</button>
+            <button class="btn op" onclick="insertVal('-')">−</button>
+
+            <button class="btn num" onclick="insertVal('1')">1</button>
+            <button class="btn num" onclick="insertVal('2')">2</button>
+            <button class="btn num" onclick="insertVal('3')">3</button>
+            <button class="btn op" onclick="insertVal('+')">+</button>
+
+            <button class="btn num" onclick="insertVal('00')">00</button>
+            <button class="btn num" onclick="insertVal('0')">0</button>
+            <button class="btn num" onclick="insertVal('.')">.</button>
+            <button class="btn equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <!-- TOOLS PAGE -->
+    <div id="toolsPage" class="tools-page">
+        <div class="tools-header">
+            <span class="tools-title">Tools &amp; Converters</span>
+            <div class="live-date-text" id="liveDateDisplay"></div>
+        </div>
+        <div class="features-grid">
+            <div class="feature-box" data-key="date" onclick="openDateMode()">
+                <div class="date-drop-final-anim"><div class="cal-final-head"></div><div class="cal-final-container"><span class="final-page">1</span><span class="final-page">2</span><span class="final-page">3</span></div></div>
+                <span>Date</span>
+            </div>
+            <div class="feature-box" data-key="age" onclick="openAgeMode()">
+                <div class="age-3d-anim"><div class="candle-container"><div class="candle-wick"></div><div class="candle-3d"></div><div class="flame-3d-wrap"><div class="flame-outer"></div><div class="flame-inner"></div></div></div><div class="cake-3d-base"><div class="cake-frosting-top"></div><div class="cake-filling-stripe"></div></div></div>
+                <span>Age</span>
+            </div>
+            <div class="feature-box" data-key="water" onclick="openWaterMode()">
+                <div class="water-glass-anim"><div class="wg-glass"><div class="wg-water"></div></div></div>
+                <span>Water</span>
+            </div>
+            <div class="feature-box" data-key="bmi" onclick="openBmiMode()">
+                <div class="bmi-scanner-anim"><div class="human-head"></div><div class="human-body"></div><div class="scan-laser"></div></div>
+                <span>BMI</span>
+            </div>
+            <div class="feature-box" data-key="currency" onclick="openCurrencyMode()">
+                <div class="coin-simple-spin">$</div>
+                <span>Currency</span>
+            </div>
+            <div class="feature-box" data-key="emi" onclick="openEMIMode()">
+                <div class="emi-box-anim"><div class="emi-box-front"></div><div class="emi-coin c1">₹</div><div class="emi-coin c2">₹</div><div class="emi-coin c3">₹</div></div>
+                <span>EMI</span>
+            </div>
+            <div class="feature-box" data-key="gst" onclick="openGSTMode()">
+                <div class="gst-print-big-anim"><div class="gst-big-slot"></div><div class="gst-big-paper"><div class="gst-big-lines"></div><div class="gst-big-percent">%</div></div></div>
+                <span>GST</span>
+            </div>
+            <div class="feature-box" data-key="discount" onclick="openDiscountMode()">
+                <div class="discount-bag-anim"><div class="bag-handle"></div><div class="bag-body">%</div></div>
+                <span>Discount</span>
+            </div>
+            <div class="feature-box" data-key="length" onclick="openLengthMode()">
+                <div class="length-caliper-anim"><div class="lc-ruler"><div class="lc-fixed-jaw"></div><div class="lc-slider"><div class="lc-screen"></div><div class="lc-slider-jaw"></div></div></div></div>
+                <span>Length</span>
+            </div>
+            <div class="feature-box" data-key="area" onclick="openAreaMode()">
+                <div class="area-axis-anim"><div class="axis-x"></div><div class="axis-y"></div><div class="area-square"></div></div>
+                <span>Area</span>
+            </div>
+            <div class="feature-box" data-key="jamin" onclick="openLandMode()">
+                <div class="land-measure-anim"><div class="lm-field"><div class="lm-tape"></div></div></div>
+                <span>Jamin</span>
+            </div>
+            <div class="feature-box" data-key="fuel" onclick="openFuelMode()">
+                <div class="fuel-pump-anim"><div class="fp-body"><div class="fp-screen"></div></div><div class="fp-nozzle"></div><div class="fp-drop"></div></div>
+                <span>Fuel</span>
+            </div>
+            <div class="feature-box" data-key="volume" onclick="openVolumeMode()">
+                <div class="vol-cup-anim"><div class="vol-cup"><div class="vol-liquid"></div><div class="vol-marks"><span></span><span></span><span></span></div></div></div>
+                <span>Volume</span>
+            </div>
+            <div class="feature-box" data-key="weight" onclick="openWeightMode()">
+                <div class="weight-seesaw-anim"><div class="w-base"></div><div class="w-beam"><div class="w-pan-string left"><div class="w-pan"><div class="w-weight-orange"></div></div></div><div class="w-pan-string right"><div class="w-pan"><div class="w-weight-gray"></div></div></div></div></div>
+                <span>Weight</span>
+            </div>
+            <div class="feature-box" data-key="speed" onclick="openSpeedMode()">
+                <div class="speed-turbo-big"><div class="st-body"><div class="st-needle"></div></div></div>
+                <span>Speed</span>
+            </div>
+            <div class="feature-box" data-key="data" onclick="openDataMode()">
+                <div class="data-pulse-ring"><div class="dp-core"></div><div class="dp-ring r1"></div><div class="dp-ring r2"></div><div class="dp-ring r3"></div></div>
+                <span>Data</span>
+            </div>
+            <div class="feature-box" data-key="temp" onclick="openTempMode()">
+                <div class="temp-therm-anim"><div class="therm-body"><div class="therm-mercury"></div><div class="therm-marks"><span></span><span></span><span></span></div></div></div>
+                <span>Temp</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDE MENU -->
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <div class="header-left">
+                <div class="app-logo"><i class="fas fa-calculator"></i></div>
+                <div class="app-info">
+                    <h3>Meraj Calculator</h3>
+                    <span class="pro-badge">M.A PRO</span>
+                </div>
+            </div>
+            <button class="close-menu-btn" onclick="closeMenu()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="menu-scroll-content">
+            <!-- Language Section -->
+            <div class="menu-section-label" id="menu-lang-label">LANGUAGE</div>
+            <div class="lang-select-wrapper">
+                <div class="lang-btn-group">
+                    <button id="btn-lang-en" class="lang-btn active" onclick="setLanguage('English (India)')">EN</button>
+                    <button id="btn-lang-hi" class="lang-btn" onclick="setLanguage('Hindi')">हिंदी</button>
+                    <button id="btn-lang-ur" class="lang-btn" onclick="setLanguage('Urdu')">اردو</button>
+                </div>
+            </div>
+
+            <!-- Theme Section -->
+            <div class="menu-section-label" id="menu-theme-label" style="margin-top:20px;">THEME</div>
+            <div class="lang-btn-group">
+                <button id="btn-theme-system" class="lang-btn active" onclick="applyTheme('system')"><i class="fas fa-mobile-alt"></i></button>
+                <button id="btn-theme-light" class="lang-btn" onclick="applyTheme('light')"><i class="fas fa-sun"></i></button>
+                <button id="btn-theme-dark" class="lang-btn" onclick="applyTheme('dark')"><i class="fas fa-moon"></i></button>
+            </div>
+
+            <div class="menu-section-label" id="menu-tools-label">TOOLS</div>
+            <!-- Bug #14 Fix — Constants ab Formula Book se linked hai -->
+            <div class="menu-item" id="menu-item-constants" onclick="closeMenu(); if(typeof openHomeTool_Formula==='function'){openHomeTool_Formula();}else{alert('Formula Book');}"><i class="fas fa-atom"></i><span>Constants &amp; Formulas</span></div>
+
+            <div class="menu-section-label" id="menu-social-label">SOCIAL</div>
+            <div class="menu-item" onclick="closeMenu(); window.open(APP.social.whatsapp + encodeURIComponent(APP.getShareMessage()), '_blank');"><i class="fab fa-whatsapp" style="color:#25D366;"></i><span>WhatsApp</span></div>
+            <div class="menu-item" onclick="closeMenu(); window.open(APP.social.instagram, '_blank');"><i class="fab fa-instagram" style="color:#E1306C;"></i><span>Instagram</span></div>
+
+            <div class="menu-section-label" id="menu-app-label">APP</div>
+            <div class="menu-item" id="menu-item-share" onclick="closeMenu(); shareAppInstall();"><i class="fas fa-share-alt"></i><span data-i18n="share">Share App</span></div>
+            <div class="menu-item" id="menu-item-about" onclick="closeMenu(); alert(APP.getAbout());"><i class="fas fa-info-circle"></i><span data-i18n="info">About</span></div>
+        </div>
+        <div class="menu-footer">Made with <span style="color:#ff5555;">❤️</span> by <span id="footer-dev"></span></div>
+    </div>
+
+    <!-- HISTORY MODAL -->
+    <div id="historyModal" class="modal tool-modal">
+        <div class="modal-content features-panel history-layout">
+            <div class="history-header">
+                <button class="icon-btn back-btn" onclick="closeHistory()"><i class="fas fa-arrow-left"></i></button>
+                <span class="history-title">History</span>
+                <div class="header-right">
+                    <button class="icon-btn action-icon" onclick="toggleSelectionMode()" title="Select Items"><i class="fas fa-check-square" id="selectModeIcon"></i></button>
+                    <button class="icon-btn action-icon" onclick="shareHistoryAsImage()" title="Share as Image"><i class="fas fa-share-alt"></i></button>
+                </div>
+            </div>
+            <div id="historyList" class="history-list-container"></div>
+            <div class="history-footer">
+                <button id="clearAllBtn" class="action-btn btn-red" onclick="showDeleteConfirm()">Clear All History</button>
+                <button id="deleteSelectedBtn" class="action-btn btn-red" style="display:none;" onclick="deleteSelectedItems()">Delete Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="customAlertModal" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <h3 id="customAlertTitle">Alert</h3>
+            <p id="customAlertMessage">Message goes here...</p>
+            <div class="modal-actions single-btn">
+                <button class="modal-btn confirm-ok" onclick="closeCustomAlert()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRM MODAL -->
+    <div id="deleteConfirmModal" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <h3>Delete History?</h3>
+            <p>Are you sure you want to delete all history?</p>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeDeleteConfirm()">Cancel</button>
+                <button class="modal-btn delete" onclick="confirmClearAll()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRIVACY PAGE -->
+    <div id="privacyPage" class="privacy-page">
+        <div class="privacy-header">
+            <button class="back-btn" onclick="closePrivacyPage()"><i class="fas fa-arrow-left"></i></button>
+            <span class="privacy-title" id="privacy-page-title">Calculator</span>
+            <div style="width:40px;"></div>
+        </div>
+        <div class="privacy-content">
+            <div class="privacy-label" id="privacy-about-label">ABOUT CALCULATOR</div>
+            <!-- Bug #10 Fix — Real Privacy Policy modal -->
+            <div class="privacy-item" onclick="document.getElementById('privacyPolicyModal').style.display='flex';">
+                <span class="item-text" id="privacy-policy-item">Privacy Policy</span>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </div>
+            <div class="privacy-item">
+                <span class="item-text" id="privacy-withdrawal-item">Withdrawal of consent</span>
+                <label class="switch">
+                    <input type="checkbox" id="withdrawalToggle" checked onchange="handleWithdrawalConsent(this.checked)">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRIVACY POLICY MODAL (Bug #10 Fix) -->
+    <div id="privacyPolicyModal" class="custom-modal-overlay" style="display:none; align-items:flex-start; padding-top:40px;">
+        <div class="custom-modal-box" style="max-height:80vh; overflow-y:auto; text-align:left; max-width:360px;">
+            <h3 style="color:var(--primary); margin-bottom:12px;">Privacy Policy</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:8px;">Last updated: March 2026</p>
+            <p style="font-size:0.88rem; line-height:1.7; color:var(--text-main); margin-bottom:10px;">
+                <strong>Meraj Calculator Pro</strong> aapki privacy ki parwah karta hai. Yeh policy batati hai ki hum kya data collect karte hain aur kaise use karte hain.
+            </p>
+            <p style="font-size:0.88rem; line-height:1.7; color:var(--text-main); margin-bottom:10px;">
+                <strong>📦 Data Jo Hum Store Karte Hain:</strong><br>
+                • Calculation history (sirf aapke device par — localStorage)<br>
+                • App language preference<br>
+                • Theme preference<br>
+                • Consent status
+            </p>
+            <p style="font-size:0.88rem; line-height:1.7; color:var(--text-main); margin-bottom:10px;">
+                <strong>🚫 Data Jo Hum Share NAHI Karte:</strong><br>
+                • Koi bhi data kisi server ya third party ko nahi bheja jaata.<br>
+                • App mein koi tracking ya analytics nahi hai.<br>
+                • Koi personal information collect nahi ki jaati.
+            </p>
+            <p style="font-size:0.88rem; line-height:1.7; color:var(--text-main); margin-bottom:10px;">
+                <strong>🔒 Aapka Adhikar:</strong><br>
+                Aap kabhi bhi "Withdrawal of Consent" toggle se data saving band kar sakte hain. Settings mein jaake history bhi clear kar sakte hain.
+            </p>
+            <p style="font-size:0.82rem; color:var(--text-muted);">
+                Contact: <span id="ppEmail">merajalam@gmail.com</span>
+            </p>
+            <div class="modal-actions single-btn" style="margin-top:16px;">
+                <button class="modal-btn confirm-ok" onclick="document.getElementById('privacyPolicyModal').style.display='none';">Samajh Gaya — Close</button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- end calc-container -->
+
+<script src="js/main.js"></script>
+<script src="js/share.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/meraj.js"></script>
+<script src="js/home.js"></script>
+<script src="js/amin.js"></script>
+<script>
+    /* Set dynamic footer developer name from config */
+    document.addEventListener('DOMContentLoaded', function() {
+        const el = document.getElementById('footer-dev');
+        if (el) el.textContent = APP.developer;
+    });
+</script>
+
+</body>
+</html>
